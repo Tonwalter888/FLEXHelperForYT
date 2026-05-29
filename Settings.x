@@ -226,10 +226,18 @@ static void makeSelecty(YTMSettingsSectionItem *item) {
         pushCollectionViewController(self, TweakName, settingItems);
         return YES;
     };
-    YTMSettingsSectionController *settings = [[%c(YTMSettingsSectionController) alloc] initWithTitle:@"" items:@[settingMenuItem] parentResponder:[self parentResponder]];
+    YTMSettingsSectionController *settings = [[%c(YTMSettingsSectionController) alloc] initWithTitle:TweakName items:@[settingMenuItem] parentResponder:[self parentResponder]];
     settings.categoryID = 'fhyt';
     [newSectionControllers insertObject:settings atIndex:0];
     return newSectionControllers;
 }
 
 %end
+
+%ctor {
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+        ShakeKey: @YES,
+        EnablesTweakKey: @YES,
+    }];
+    %init;
+}
