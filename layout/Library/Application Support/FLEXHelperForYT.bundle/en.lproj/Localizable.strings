@@ -1,0 +1,6 @@
+"AUTO_ACTIVATE" = "Auto activates FLEX";
+"AUTO_ACTIVATE_DESC" = "Automatically activates FLEX explorer on startup";
+"SHAKE_TO_ACTIVATE" = "Shake to activtes FLEX";
+"SHAKE_TO_ACTIVATE_DESC" = "Shake the device to activates FLEX explorer";
+"ACTIVATE" = "Activates FLEX";
+"ACTIVATE_DESC" = "Tap here to activates FLEX explorer";

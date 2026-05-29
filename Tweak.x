@@ -7,15 +7,40 @@
 @end
 
 extern BOOL EnablesTweak();
+extern BOOL Shake();
 
 %hook YTAppDelegate
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions {
+- (BOOL)application:(id)application didFinishLaunchingWithOptions:(id)launchOptions {
     BOOL didFinishLaunching = %orig;
     if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
     return didFinishLaunching;
 }
-- (void)appWillResignActive:(id)arg1 {
+- (void)appWillResignActive:(id)arg {
     %orig;
     if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
+}
+%end
+
+%hook YTMAppDelegate
+- (BOOL)application:(id)application didFinishLaunchingWithOptions:(id)launchOptions {
+    BOOL didFinishLaunching = %orig;
+    if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
+    return didFinishLaunching;
+}
+- (BOOL)application:(id)application didFinishLaunchingWithOptionsImplementation:(id)launchOptions {
+    BOOL didFinishLaunching = %orig;
+    if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
+    return didFinishLaunching;
+}
+- (void)appWillResignActive:(id)arg {
+    %orig;
+    if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
+}
+%end
+
+%hook UIWindow
+- (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event {
+    %orig;
+    if (motion == UIEventSubtypeMotionShake && Shake()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
 }
 %end
