@@ -7,11 +7,8 @@
 #import <YouTubeHeader/YTSettingsSectionItem.h>
 #import <YouTubeHeader/YTSettingsSectionItemManager.h>
 #import <YouTubeHeader/YTSettingsViewController.h>
+#import <YouTubeHeader/YTToastResponderEvent.h>
 #import <YouTubeHeader/YTIIcon.h>
-#import <YouTubeHeader/GOOHeaderViewController.h>
-#import <YouTubeMusicHeader/YTMSettingsResponseViewController.h>
-#import <YouTubeMusicHeader/YTMSettingsSectionController.h>
-#import <YouTubeMusicHeader/YTMSettingsSectionItem.h>
 
 #define TweakName @"FLEXHelperForYT"
 
@@ -54,20 +51,6 @@ static NSBundle *FLEXHelperForYTBundle() {
     return bundle;
 }
 
-static void pushCollectionViewController(YTMSettingsResponseViewController *self, NSString *title, NSMutableArray <YTMSettingsSectionItem *> *settingItems) {
-    YTMSettingsResponseViewController *responseVC = [[%c(YTMSettingsResponseViewController) alloc] initWithService:[self valueForKey:@"_service"] parentResponder:self];
-    responseVC.title = title;
-    YTMSettingCollectionSectionController *scsc = [[%c(YTMSettingCollectionSectionController) alloc] initWithTitle:@"" items:settingItems parentResponder:responseVC];
-    [responseVC collectionViewController].sectionControllers = @[scsc];
-    GOOHeaderViewController *headerVC = [[%c(GOOHeaderViewController) alloc] initWithContentViewController:responseVC];
-    [self.navigationController pushViewController:headerVC animated:YES];
-}
-
-static void makeSelecty(YTMSettingsSectionItem *item) {
-    item.indicatorIconType = YT_CHEVRON_RIGHT;
-    item.inkEnabled = YES;
-}
-
 %hook YTSettingsGroupData
 
 - (NSArray <NSNumber *> *)orderedCategories {
@@ -106,7 +89,7 @@ static void makeSelecty(YTMSettingsSectionItem *item) {
 
     // Tweak Version (at the top)
     // Thanks to the original codes from YTweaks by fosterbarnes - https://github.com/fosterbarnes/YTweaks/blob/e921591a89b87256a2b37c4788bd99282f70d9c2/Settings.x
-    YTSettingsSectionItem *tweakVersion = [YTSettingsSectionItemClass itemWithTitle:@"FLEXHelperForYT v1.1.0"
+    YTSettingsSectionItem *tweakVersion = [YTSettingsSectionItemClass itemWithTitle:@"FLEXHelperForYT v1.1.1"
         titleDescription:nil
         accessibilityIdentifier:nil
         detailTextBlock:nil
@@ -145,7 +128,9 @@ static void makeSelecty(YTMSettingsSectionItem *item) {
         accessibilityIdentifier:nil
         detailTextBlock:nil
         selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
-            return [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
+            [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
+            [[%c(YTToastResponderEvent) eventWithMessage:LOC(@"ACTIVATED") firstResponder:[self parentResponder]] send];
+            return YES;
         }
     ];
     [sectionItems addObject:activate];
@@ -164,72 +149,6 @@ static void makeSelecty(YTMSettingsSectionItem *item) {
         return;
     }
     %orig;
-}
-
-%end
-
-// Adapted from YTMABConfig (https://github.com/PoomSmart/YTMABConfig)
-%hook YTMSettingsResponseViewController
-
-- (NSArray <YTMSettingsSectionController *> *)sectionControllersFromSettingsResponse:(id)response {
-    Class YTMSettingsSectionItemClass = %c(YTMSettingsSectionItem);
-    NSBundle *tweakBundle = FLEXHelperForYTBundle();
-    NSMutableArray <YTMSettingsSectionController *> *newSectionControllers = [NSMutableArray arrayWithArray:%orig];
-    YTMSettingsSectionItem *settingMenuItem = [%c(YTMSettingsSectionItem) itemWithTitle:TweakName accessibilityIdentifier:nil detailTextBlock:nil selectBlock:nil];
-    makeSelecty(settingMenuItem);
-    settingMenuItem.selectBlock = ^BOOL(YTSettingsCell *cell, NSUInteger arg1) {
-        NSMutableArray <YTMSettingsSectionItem *> *settingItems = [NSMutableArray new];
-
-        // Tweak Version (at the top)
-        YTMSettingsSectionItem *tweakVersion = [YTMSettingsSectionItemClass itemWithTitle:@"FLEXHelperForYT v1.1.0"
-            titleDescription:nil
-            accessibilityIdentifier:nil
-            detailTextBlock:nil
-            selectBlock:nil];
-        [settingItems insertObject:tweakVersion atIndex:0];
-
-        // Auto activates FLEX
-        YTMSettingsSectionItem *enablesTweak = [YTMSettingsSectionItemClass switchItemWithTitle:LOC(@"AUTO_ACTIVATE")
-            titleDescription:LOC(@"AUTO_ACTIVATE_DESC")
-            accessibilityIdentifier:nil
-            switchOn:EnablesTweak()
-            switchBlock:^BOOL (YTSettingsCell *cell, BOOL enabled) {
-                [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:EnablesTweakKey];
-                return YES;
-            }
-            settingItemId:0];
-        [settingItems insertObject:enablesTweak atIndex:0];
-
-        // Shake to activates FLEX
-        YTMSettingsSectionItem *shake = [YTMSettingsSectionItemClass switchItemWithTitle:LOC(@"SHAKE_TO_ACTIVATE")
-            titleDescription:LOC(@"SHAKE_TO_ACTIVATE_DESC")
-            accessibilityIdentifier:nil
-            switchOn:Shake()
-            switchBlock:^BOOL (YTSettingsCell *cell, BOOL enabled) {
-                [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:ShakeKey];
-                return YES;
-            }
-            settingItemId:0];
-        [settingItems insertObject:shake atIndex:0];
-
-        // Activate FLEX
-        YTMSettingsSectionItem *activate = [YTMSettingsSectionItemClass itemWithTitle:LOC(@"ACTIVATE")
-            titleDescription:LOC(@"ACTIVATE_DESC")
-            accessibilityIdentifier:nil
-            detailTextBlock:nil
-            selectBlock:^BOOL (YTSettingsCell *cell, NSUInteger arg1) {
-                return [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
-            }
-        ];
-        [settingItems insertObject:activate atIndex:0];
-
-        pushCollectionViewController(self, TweakName, settingItems);
-        return YES;
-    };
-    YTMSettingsSectionController *settings = [[%c(YTMSettingsSectionController) alloc] initWithTitle:TweakName items:@[settingMenuItem] parentResponder:[self parentResponder]];
-    settings.categoryID = 'fhyt';
-    [newSectionControllers insertObject:settings atIndex:0];
-    return newSectionControllers;
 }
 
 %end

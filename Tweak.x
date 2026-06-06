@@ -15,24 +15,7 @@ extern BOOL Shake();
     if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
     return didFinishLaunching;
 }
-- (void)appWillResignActive:(id)arg {
-    %orig;
-    if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
-}
-%end
-
-%hook YTMAppDelegate
-- (BOOL)application:(id)application didFinishLaunchingWithOptions:(id)launchOptions {
-    BOOL didFinishLaunching = %orig;
-    if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
-    return didFinishLaunching;
-}
-- (BOOL)application:(id)application didFinishLaunchingWithOptionsImplementation:(id)launchOptions {
-    BOOL didFinishLaunching = %orig;
-    if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
-    return didFinishLaunching;
-}
-- (void)appWillResignActive:(id)arg {
+- (void)appWillResignActive {
     %orig;
     if (EnablesTweak()) [[%c(FLEXManager) performSelector:@selector(sharedManager)] performSelector:@selector(showExplorer)];
 }

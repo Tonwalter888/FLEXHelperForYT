@@ -4,3 +4,4 @@
 "SHAKE_TO_ACTIVATE_DESC" = "Shake the device to activates FLEX explorer";
 "ACTIVATE" = "Activates FLEX";
 "ACTIVATE_DESC" = "Tap here to activates FLEX explorer";
+"ACTIVATED" = "Activated FLEX explorer";

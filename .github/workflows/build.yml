@@ -70,14 +70,6 @@ jobs:
             git pull --quiet --force
             cd ${{ github.workspace }}
           fi
-          
-          if [ ! -d "$THEOS/include/YouTubeMusicHeader" ]; then
-            git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeMusicHeader.git "$THEOS/include/YouTubeMusicHeader"
-          else
-            cd $THEOS/include/YouTubeMusicHeader
-            git pull --quiet --force
-            cd ${{ github.workspace }}
-          fi
 
           if [ ! -d "$THEOS/include/PSHeader" ]; then
             git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git "$THEOS/include/PSHeader"

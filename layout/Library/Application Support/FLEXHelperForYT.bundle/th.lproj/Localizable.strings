@@ -4,3 +4,4 @@
 "SHAKE_TO_ACTIVATE_DESC" = "เขย่าอุปกรณ์เพื่อเปิดหน้าต่าง FLEX";
 "ACTIVATE" = "เปิดหน้าต่าง FLEX";
 "ACTIVATE_DESC" = "แตะที่นี่เพื่อเปิดหน้าต่าง FLEX";
+"ACTIVATED" = "เปิดหน้าต่าง FLEX แล้ว";
